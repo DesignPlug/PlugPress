@@ -1,28 +1,18 @@
 <?php namespace PlugPress;
 
+use \Plug\Session as Session;
+use \Plug\traits\FieldsStatic as Fields;
+use \Plug\Validator as Validator;
+use \Plug\HTTP as HTTP;
 
 abstract class Post implements Crud{
-    
-    //fields object
-    
-    static private $fields;
-    
+
+    use Fields;    
     
     static protected $posttype,
                      $labels = array(),
                      $register_param = array(),
                      $namespace;
-    
-    
-    static function Fields($namespace)
-    {
-        self::$namespace = $namespace;
-        
-        if(!isset(self::$fields)){
-            self::$fields = new Fields($namespace);
-        }
-        return self::$fields;
-    }
     
     
     static function create()
@@ -69,8 +59,7 @@ abstract class Post implements Crud{
             self::$register_param['supports'] = array('title',
                                                      'editor',
                                                      'thumbnail',
-                                                     'revisions',
-                                                     'custom-fields');
+                                                     'revisions');
         
         if(!isset(self::$register_param['public']))
             self::$register_param['public'] = true;
@@ -81,17 +70,38 @@ abstract class Post implements Crud{
         
 	self::$register_param['labels'] = self::$labels;
         
-        $posttype = self::$posttype;
-        $param    = self::$register_param;
+        $posttype     = self::$posttype;
+        $param        = self::$register_param;
+        $called_class = get_called_class();
         
-        add_action("init", function() use($posttype, $param){
+        add_action("init", function() use($posttype, $param, $called_class){
+            
            register_post_type( $posttype, $param ); 
+           
+           add_action("save_post", [$called_class, "update"]);
+           
         });
     }
     
     static function load_meta_boxes()
     {
-        
+        $post = get_called_class();
+        add_meta_box(self::$posttype ."_meta_box",  
+                     self::$labels['name'] ." meta",
+                     function() use($post){
+            
+                            $post::setPostMeta(get_the_ID());
+                            
+                            $form_inputs = "";
+                            
+                            if($flds = $post::Fields()){
+                                foreach($flds as $field){
+                                    $form_inputs .= \Plug\Form::input($field);
+                                }
+                            }
+                            echo "<table class='form-table'>" .$form_inputs ."</table>";
+                     }, 
+                     self::$posttype);
     }
     
     //run this function when the post is being viewed
@@ -99,12 +109,58 @@ abstract class Post implements Crud{
 
     static function update() 
     {
-        //get all posted values and validate them
-        //save the ones that pass, and create errors for the
-        //ones that fail, if none fail create success message flash
+        //update only if  posttype matches
+        if(strtolower(self::$posttype) == $_POST['post_type']) 
+        {
+            //set custom fields with posted value
+            HTTP::setPostVars(self::Fields());
+
+            //now time to validate fields
+            $v = new Validator(self::Fields());
+            
+            $id = $_POST['post_ID'];
+            
+            //call validate method for additional custom validation
+            $result = self::validate($v->getValidFields(), $v->getErrors());
+            
+            //if result is null only update valid fields
+            if($result === null){
+                self::updatePostMeta($id, $v->getValidFields());
+            } else if($result === true) {
+                self::updatePostMeta($id);
+            }
+        }
     }
     
-    static function delete(){
+    static function updatePostMeta($id, $fields = false)
+    {
+        if(count(func_get_args()) === 1) $fields = self::Fields(); 
+        foreach($fields as $field){
+            update_post_meta($id, $field->name(), $field->value());
+        }
+    }
+    
+    static function setPostMeta($id){
+        
+        $meta = get_post_meta($id);
+        
+        foreach(self::Fields() as $field){
+            if(isset($meta[$field->name()]))
+                $field->value($meta[$field->name()][0]);
+        }
+    }
+    
+    static function validate($valid_fields, $error_fields){
+        
+        //override this method to handle additional validation, 
+        //and field comparison/dependecy issues, 
+        //return false to cancel update, true to update all fields including
+        //error fields, null to update only  
+        return null;
+    }
+    
+    static function delete()
+    {
         
     }
     

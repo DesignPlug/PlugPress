@@ -29,7 +29,16 @@ class Code extends \PlugPress\Post{
                             ->title("Codepen")
                             ->description("Link to Codepen Source")
                             ->type("url");
-                    }); 
+                        
+                    })
+                    ->add("example", function($fld){
+                        
+                        $fld->title("Textarea")
+                            ->description("Textarea example")
+                            ->type("textarea")
+                            ->validation_rules("min_len,30|alpha");
+                        
+                    });
                     
         parent::create();
     }

@@ -1,10 +1,10 @@
-<?php namespace PlugPress;
+<?php namespace Plug;
 
 class Fields implements \Iterator{
     
     protected $fields, $namespace;
     
-    function __construct($namespace) {
+    function __construct($namespace = "") {
         $this->namespace = $namespace;
     }
     
@@ -29,6 +29,15 @@ class Fields implements \Iterator{
     function remove($name){
         if(isset($this->fields[$name])) unset($this->fields[$name]);
     }
+    
+    function get($name){
+        return @$this->fields[$name];
+    }
+    
+    function exists($name){
+        return isset($this->fields[$name]) ? true : false;
+    }
+    
     
     function rewind() 
     {

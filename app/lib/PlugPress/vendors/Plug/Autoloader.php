@@ -1,4 +1,4 @@
-<?php namespace PlugPress;
+<?php namespace Plug;
 
 class Autoloader {
     

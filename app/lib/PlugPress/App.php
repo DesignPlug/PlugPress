@@ -1,32 +1,41 @@
 <?php namespace PlugPress;
 
+use \Plug\Autoloader as Autoloader;
 
 if(!class_exists("PlugPress\APP")){
     
-    require 'autoloader.php';
+    require 'vendors/Plug/autoloader.php';
     
     class APP {
-
+        
         static protected $plugins = array();
 
         static public function init($plugin_name, $plugin_file_name, $namespace)
         {
             if(!isset(self::$plugins[$plugin_name]))
             {
+                
                 //define plugin constants
                 self::defineConst($namespace, $plugin_file_name, $plugin_name);
                 
-                //register core and core vendors
                 //if this is the first call
                 
                 if(count(self::$plugins) === 0) 
                 {
+                    //start session 
+                    add_action("init", ['\Plug\Session', 'start']);
+                    
                     //create route 
                     add_action("init", array("\Plugpress\Route", "create"));
                     
+                   //register core and core vendors dir
                     spl_autoload_register(array(new Autoloader(constant($namespace .'APP_DIR') .'\lib\\'), 'load'));
                     spl_autoload_register(array(new Autoloader(constant($namespace .'APP_DIR') .'\lib\Plugpress\vendors\\'), 'load'));
                     spl_autoload_register(array(new Autoloader(constant($namespace .'APP_DIR') .'\lib\Plugpress\vendors\{class}\\'), 'load'));
+                    
+                    //kill  all flashes at the end  of sessions
+                    add_action("shutdown", ['\Plug\Session', 'clearFlash']);
+                    
                 }
                 
                 //register autoloader for new plugin

@@ -28,7 +28,7 @@ class View extends CustomTemplate{
             return $this->add($key, $view);
         } else {
             $dir = $this->template_dir;
-            return $this->add($key, new _closure(function() use ($dir, $view) {
+            return $this->add($key, new \Plug\_closure(function() use ($dir, $view) {
                             $sep = DIRECTORY_SEPARATOR;
                             include rtrim($dir, $sep) .$sep .str_replace(array("/","\\"), $sep, $view) .".php";
                           }));   

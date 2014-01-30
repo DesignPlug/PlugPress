@@ -1,4 +1,4 @@
-<?php namespace Plugpress;
+<?php namespace Plug;
 
 class _closure{
 
