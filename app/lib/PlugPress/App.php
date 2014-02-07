@@ -26,12 +26,12 @@ if(!class_exists("PlugPress\APP")){
                     add_action("init", ['\Plug\Session', 'start']);
                     
                     //create route 
-                    add_action("init", array("\Plugpress\Route", "create"));
+                    add_action("init", ["\Plugpress\Route", "create"]);
                     
                    //register core and core vendors dir
-                    spl_autoload_register(array(new Autoloader(constant($namespace .'APP_DIR') .'\lib\\'), 'load'));
-                    spl_autoload_register(array(new Autoloader(constant($namespace .'APP_DIR') .'\lib\Plugpress\vendors\\'), 'load'));
-                    spl_autoload_register(array(new Autoloader(constant($namespace .'APP_DIR') .'\lib\Plugpress\vendors\{class}\\'), 'load'));
+                    spl_autoload_register([new Autoloader(constant($namespace .'APP_DIR') .'\lib\\'), 'load']);
+                    spl_autoload_register([new Autoloader(constant($namespace .'APP_DIR') .'\lib\Plugpress\vendors\\'), 'load']);
+                    spl_autoload_register([new Autoloader(constant($namespace .'APP_DIR') .'\lib\Plugpress\vendors\{class}\\'), 'load']);
                     
                     //kill  all flashes at the end  of sessions
                     add_action("shutdown", ['\Plug\Session', 'clearFlash']);
@@ -39,7 +39,7 @@ if(!class_exists("PlugPress\APP")){
                 }
                 
                 //register autoloader for new plugin
-                spl_autoload_register(array(new Autoloader(constant($namespace .'PLUGIN_DIR')), 'load'));
+                spl_autoload_register([new Autoloader(constant($namespace .'PLUGIN_DIR')), 'load']);
 
                 //bootstraps plugin application
                 self::bootstrap($plugin_name, $namespace);

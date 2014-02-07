@@ -2,7 +2,8 @@
 
  class Form {
      
-    static $input_wrapper = '<tr class="form-field"><th scope="row">{label}</th><td><span class="error">{error}</span> {input}<span class="help">{help}</span></td></tr>';
+    static $input_wrapper = '<tr class="form-field"><th scope="row">{label}</th>
+                             <td><span class="error">{error}</span> {input}<span class="help">{help}</span></td></tr>';
    
     static $input_vars = array('help', 
                                'label',

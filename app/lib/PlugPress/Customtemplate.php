@@ -41,7 +41,7 @@ abstract class CustomTemplate implements Template{
         $sep = DIRECTORY_SEPARATOR;        
         
         $templateFile = rtrim( $template, '.php' );
-        str_replace(array("/","\\"), $sep, $templateFile);
+        //str_replace(array("/","\\"), $sep, $templateFile);
         $template     = $templateFile . '.php';
 
         // Check if a custom template exists in the theme folder, if not, load the plugin template file
