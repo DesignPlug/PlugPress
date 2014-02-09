@@ -31,11 +31,18 @@ abstract class CustomTemplate implements Template{
     }
 
     abstract function loadTemplateStyles($template = null);
+    
+    function setPageTitle($title){
+        return $title;
+    }
 
     function getTemplate( $template )
     {
         //enqueue scripts
         add_action( 'wp_enqueue_scripts', array($this, 'loadTemplateStyles'));
+        
+        //set the page title
+        add_filter( 'the_title', array($this, 'setPageTitle'));
 
         // Get the template slug
         $sep = DIRECTORY_SEPARATOR;        

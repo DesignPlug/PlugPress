@@ -1,6 +1,11 @@
 <?php namespace PlugPress;
 
 use \Plug\Autoloader as Autoloader;
+use \Illuminate\Database\Capsule\Manager as Capsule;
+use \Illuminate\Events\Dispatcher;
+use \Illuminate\Container\Container;
+
+
 
 if(!class_exists("PlugPress\APP")){
     
@@ -10,10 +15,13 @@ if(!class_exists("PlugPress\APP")){
         
         static protected $plugins = array();
 
-        static public function init($plugin_name, $plugin_file_name, $namespace)
+        static public function init($plugin_name, $plugin_file_name, $namespace, $plugpress_dir = "")
         {
             if(!isset(self::$plugins[$plugin_name]))
             {
+                //define APP DIR
+                
+                define("Plugpress_APP_DIR", ABSPATH . 'wp-content/plugins/plugpress/app');
                 
                 //define plugin constants
                 self::defineConst($namespace, $plugin_file_name, $plugin_name);
@@ -29,13 +37,15 @@ if(!class_exists("PlugPress\APP")){
                     add_action("init", ["\Plugpress\Route", "create"]);
                     
                    //register core and core vendors dir
-                    spl_autoload_register([new Autoloader(constant($namespace .'APP_DIR') .'\lib\\'), 'load']);
-                    spl_autoload_register([new Autoloader(constant($namespace .'APP_DIR') .'\lib\Plugpress\vendors\\'), 'load']);
-                    spl_autoload_register([new Autoloader(constant($namespace .'APP_DIR') .'\lib\Plugpress\vendors\{class}\\'), 'load']);
+                    spl_autoload_register([new Autoloader(\Plugpress_APP_DIR .'\lib\\'), 'load']);
+                    spl_autoload_register([new Autoloader(\Plugpress_APP_DIR .'\lib\Plugpress\vendors\\'), 'load']);
+                    spl_autoload_register([new Autoloader(\Plugpress_APP_DIR .'\lib\Plugpress\vendors\{class}\\'), 'load']);
+                    
+                    //load db
+                    self::loadDB();
                     
                     //kill  all flashes at the end  of sessions
                     add_action("shutdown", ['\Plug\Session', 'clearFlash']);
-                    
                 }
                 
                 //register autoloader for new plugin
@@ -51,6 +61,27 @@ if(!class_exists("PlugPress\APP")){
             }
         }
         
+        static protected function loadDB()
+        {
+            //require Composer autoloader
+            require \Plugpress_APP_DIR .'\lib\Plugpress\vendors\WPMVC\vendor\autoload.php';            
+            
+            $capsule = new Capsule();
+            $capsule->addConnection(array(
+                    'driver' => 'mysql',
+                    'host' => DB_HOST,
+                    'database' => DB_NAME,
+                    'username' => DB_USER,
+                    'password' => DB_PASSWORD,
+                    'charset' => DB_CHARSET,
+                    'collation' => 'utf8_unicode_ci',
+                    'prefix' => ''));
+            $capsule->setEventDispatcher(new Dispatcher(new Container()));
+            $capsule->setAsGlobal();
+            $capsule->bootEloquent();
+        }
+
+
         static protected function defineConst($namespace, $plugin_file_name, $plugin_name)
         {
             $root_dir = str_replace('\wp-admin', '', getcwd());
@@ -115,6 +146,10 @@ if(!class_exists("PlugPress\APP")){
                 register_activation_hook($file, array($bootstrap, 'activate'));
                 register_deactivation_hook($file, array($bootstrap, 'deactivate'));
                 register_uninstall_hook($file, array($bootstrap, 'uninstall'));
+                
+                //initialize routes
+                $bootstrap->route();
+                
                 if($bootstrap->register_autoload === true){
                     spl_autoload_register (array($bootstrap, 'autoload'));
                 }
@@ -125,6 +160,7 @@ if(!class_exists("PlugPress\APP")){
             }
         }
     }
+    
 }
 
 ?>
