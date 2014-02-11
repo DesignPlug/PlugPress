@@ -32,7 +32,6 @@ class Route {
         //check url for a match
         
         if($match = self::getRouter()->match()){
-
             
             //default status heading 200
             HTTP::setHeaderStatus(200);

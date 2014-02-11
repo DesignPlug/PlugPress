@@ -4,30 +4,26 @@
    
      static protected $constants = array();
      static protected $namespace;
+     static protected $pluginVars = array();
      
-     static function set_const($key, $value, $use_namespace = false){
-         if(trim($key) === "NAMESPACE") {
-             self::$namespace = $value;
-             return;
-         }
-         if($use_namespace === true) $key = self::$namespace .$key;
-         self::$constants[$key] = $value;
+     function setVar($key, $val){
+         self::$pluginVars[get_called_class()][$key] = $val;
      }
      
-     static function __callStatic($name, $arg = null) {
-         if($name === "NAMESPACE"){
-             return self::$namespace;
-         }
-         else if(isset(self::$constants[$name])){
-             if(is_callable(self::$constants[$name])){
-                 return call_user_func(self::$constants[$name]);
-             }
-             else{
-                 return self::$constants[$name];
-             }
-         }
-         else{
-             throw new \BadMethodCallException;
+     function getVar($key){
+         return self::$pluginVars[get_called_class()][$key];
+     }
+     
+     function __get($key){
+         return $this->getConst($key);
+     }
+     
+     static function __callStatic($fn, $param){
+         $const = self::$pluginVars[get_called_class()][$fn];
+         if(is_callable($const)){
+             return call_user_func_array($const, $param);
+         } else {
+             return $const;
          }
      }
 

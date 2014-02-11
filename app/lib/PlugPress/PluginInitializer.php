@@ -54,15 +54,15 @@ final class PluginInitializer {
         define($ns ."PUBLIC_DIR",  constant($ns .'BASE_DIR') .'\public');
         define($ns ."CSS_PATH", '/' .$this->plugin_file_name .'/public/css');
         define($ns ."JS_PATH",  '/' .$this->plugin_file_name .'/public/js');
-        
-        //init autoloader
+
         $this->autoloadInit();
         
         //make constants, views and scripts accessible via Plugin::CONSTANT_NAME()
-        $cls_name = $this->plugin_class_name;
+        
+        $this->plugin = new $this->plugin_class_name;
         
         $call = "call_user_func";
-        $set_const = array($cls_name, "set_const");
+        $set_const = [$this->plugin, "setVar"];
 
         $call($set_const, "NAMESPACE", $ns);
         $call($set_const, "BASE_DIR", constant($ns ."BASE_DIR"));
@@ -84,7 +84,7 @@ final class PluginInitializer {
         //set methods for retrieving views
         $call($set_const, "View", Views::create($ns, 
                                                 constant($ns ."VIEWS_DIR"), 
-                                                $call(array($cls_name, "Scripts"))));
+                                                $call(array($this->plugin_class_name, "Scripts"))));
 
 
         //shorthand to get view vars
@@ -101,7 +101,7 @@ final class PluginInitializer {
     protected function bootstrap(){
 
         //instantiate bootstrap
-        $bootstrap = $this->plugin = new $this->plugin_class_name;
+        $bootstrap = $this->plugin;
 
         //registers activation/deactivation hooks if bootstrap implements PlugPressBootstrap interface
         if($bootstrap instanceof \Plugpress\Plugin)

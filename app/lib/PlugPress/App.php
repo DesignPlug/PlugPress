@@ -12,10 +12,8 @@ if(!function_exists("DS")){
     }
 }
 
-
 if(!class_exists("PlugPress\APP")){
     
-    require 'vendors/Plug/autoloader.php';
     
     class APP {
         
@@ -29,6 +27,8 @@ if(!class_exists("PlugPress\APP")){
                 
                 if(count(self::$plugins) === 0) 
                 {
+                    require 'vendors/Plug/autoloader.php';
+                    
                     //define Plugpress App Dir
 
                     define("Plugpress_APP_DIR", DS(ABSPATH . 'wp-content\plugins\plugpress\app'));
