@@ -6,6 +6,12 @@ use \Illuminate\Events\Dispatcher;
 use \Illuminate\Container\Container;
 
 
+if(!function_exists("DS")){
+    function DS($path){
+        return str_replace(["/","\\"], DIRECTORY_SEPARATOR, $path);
+    }
+}
+
 
 if(!class_exists("PlugPress\APP")){
     
@@ -15,21 +21,18 @@ if(!class_exists("PlugPress\APP")){
         
         static protected $plugins = array();
 
-        static public function init($plugin_name, $plugin_file_name, $namespace, $plugpress_dir = "")
+        static public function init($plugin_name, $plugin_file_name, $namespace)
         {
             if(!isset(self::$plugins[$plugin_name]))
-            {
-                //define APP DIR
-                
-                define("Plugpress_APP_DIR", ABSPATH . 'wp-content/plugins/plugpress/app');
-                
-                //define plugin constants
-                self::defineConst($namespace, $plugin_file_name, $plugin_name);
-                
+            {   
                 //if this is the first call
                 
                 if(count(self::$plugins) === 0) 
                 {
+                    //define Plugpress App Dir
+
+                    define("Plugpress_APP_DIR", DS(ABSPATH . 'wp-content\plugins\plugpress\app'));
+                
                     //start session 
                     add_action("init", ['\Plug\Session', 'start']);
                     
@@ -48,17 +51,18 @@ if(!class_exists("PlugPress\APP")){
                     add_action("shutdown", ['\Plug\Session', 'clearFlash']);
                 }
                 
-                //register autoloader for new plugin
-                spl_autoload_register([new Autoloader(constant($namespace .'PLUGIN_DIR')), 'load']);
-
-                //bootstraps plugin application
-                self::bootstrap($plugin_name, $namespace);
+                //bootstrap plugin application
+                self::$plugins[$plugin_name] = PluginInitializer::init($plugin_name, $plugin_file_name, $namespace);
                 
             }
             else
             {
-                throw new Exception("Attempted to call PlugPress:init on " .$plugin_name ." twice");
+                throw new Exception("Attempted to call PlugPress\APP:init on " .$plugin_name ." twice");
             }
+        }
+        
+        static function pluginExists($name){
+            return isset(self::$plugins[$name]) ? true : false;
         }
         
         static protected function loadDB()
@@ -79,85 +83,6 @@ if(!class_exists("PlugPress\APP")){
             $capsule->setEventDispatcher(new Dispatcher(new Container()));
             $capsule->setAsGlobal();
             $capsule->bootEloquent();
-        }
-
-
-        static protected function defineConst($namespace, $plugin_file_name, $plugin_name)
-        {
-            $root_dir = str_replace('\wp-admin', '', getcwd());
-            
-            //define constants for specific plugin
-            
-            define($namespace ."BASE_DIR", dirname($root_dir .'\wp-content\plugins\\' .$plugin_file_name .'\\' .$plugin_file_name .'.php'));
-            define($namespace ."APP_DIR",  constant($namespace .'BASE_DIR') .'\app');
-            define($namespace ."PLUGIN_DIR", constant($namespace .'APP_DIR') .'\plugin');
-            define($namespace ."DIR", constant($namespace .'PLUGIN_DIR') .'\\' .$plugin_name);
-            define($namespace ."VIEWS_DIR",   constant($namespace .'DIR') .'\views');
-            define($namespace ."CTRL_DIR",   constant($namespace .'DIR') .'\controllers');
-            define($namespace ."MODELS_DIR",   constant($namespace .'DIR') .'\models');
-            define($namespace ."PUBLIC_DIR",  constant($namespace .'BASE_DIR') .'\public');
-            define($namespace ."CSS_PATH", '/' .$plugin_file_name .'/public/css');
-            define($namespace ."JS_PATH",  '/' .$plugin_file_name .'/public/js');
-        }
-        
-        static protected function bootstrap($plugin_name, $namespace)
-        {
-            $cls_name = str_replace(array('-',' '), '', $plugin_name) .'\Plugin';
-            
-            //make constants, views and scripts accessible via Plugin::CONSTANT_NAME()
-            
-            $call = "call_user_func";
-            $set_const = array($cls_name, "set_const");
-            
-            $call($set_const, "NAMESPACE", $namespace);
-            $call($set_const, "BASE_DIR", constant($namespace ."BASE_DIR"));
-            $call($set_const, "APP_DIR",  constant($namespace ."APP_DIR"));
-            $call($set_const, "PLUGIN_DIR",  constant($namespace ."PLUGIN_DIR"));
-            $call($set_const, "VIEWS_DIR",  constant($namespace ."VIEWS_DIR"));
-            $call($set_const, "DIR",  constant($namespace ."DIR"));
-            $call($set_const, "CTRL_DIR",  constant($namespace ."CTRL_DIR"));
-            $call($set_const, "MODELS_DIR",  constant($namespace ."MODELS_DIR"));
-            $call($set_const, "PUBLIC_DIR",  constant($namespace ."PUBLIC_DIR"));
-            $call($set_const, "CSS_PATH",  constant($namespace ."CSS_PATH"));
-            $call($set_const, "JS_PATH",  constant($namespace ."JS_PATH"));
-            
-            //set method for getting scripts
-            $call($set_const, "Scripts", Scripts::create($namespace, 
-                                                         constant($namespace ."CSS_PATH"), 
-                                                         constant($namespace ."JS_PATH")));
-            
-            //set methods for retrieving views
-            $call($set_const, "View", Views::create($namespace, 
-                                                    constant($namespace ."VIEWS_DIR"), 
-                                                    $call(array($cls_name, "Scripts"))));
-            
-            
-            //shorthand to get view vars
-            $call($set_const, "ViewData", function() use ($namespace){
-                        \Plugpress\Views::getInstance($namespace);
-            });
-            
-            //instantiate bootstrap
-            $bootstrap = self::$plugins[$plugin_name] = new $cls_name;
-            
-            //registers activation/deactivation hooks if bootstrap implements PlugPressBootstrap interface
-            if($bootstrap instanceof \Plugpress\Plugin)
-            {
-                register_activation_hook($file, array($bootstrap, 'activate'));
-                register_deactivation_hook($file, array($bootstrap, 'deactivate'));
-                register_uninstall_hook($file, array($bootstrap, 'uninstall'));
-                
-                //initialize routes
-                $bootstrap->route();
-                
-                if($bootstrap->register_autoload === true){
-                    spl_autoload_register (array($bootstrap, 'autoload'));
-                }
-            }
-            else
-            {
-                throw new \InvalidArgumentException("Bootstrap for plugin: " .$plugin_name ." must extend Plugpress\Plugin Class");
-            }
         }
     }
     
