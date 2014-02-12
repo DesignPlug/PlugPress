@@ -109,6 +109,10 @@ class Field{
         return $this;
     }
     
+    function __toString(){
+        return $this->value();
+    }
+    
 }
 
 ?>
