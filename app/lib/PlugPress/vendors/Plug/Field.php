@@ -3,7 +3,7 @@
 
 class Field{
     
-    use traits\ValidInputTypes;
+    //use traits\ValidInputTypes;
     use traits\PropertyMethods;
     
     protected $name,
@@ -93,9 +93,11 @@ class Field{
     function type($type = null){
         if(func_num_args() === 0) return $this->type;
         
+        /*
         if(!in_array(trim($type), Field::$valid_types))
             throw new Exception("Invalid type: '" .$type ."' given for Field " .$this->name);
-                
+        */
+        
         $this->type = $type;
         return $this;
     }    

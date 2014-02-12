@@ -1,6 +1,6 @@
 <?php namespace Plug;
 
-class Fields implements \Iterator{
+class Fields implements \Iterator, \ArrayAccess{
     
     protected $fields, $namespace;
     
@@ -63,6 +63,23 @@ class Fields implements \Iterator{
     {
         return $this->current();
     }
+    
+    function offsetExists ( $offset ){
+        return $this->exists($offset);
+    }
+
+    function offsetGet ( $offset ){
+        return $this->get($offset);
+    }
+    
+    function offsetSet ($offset ,$value){
+        $this->add($offset, function($field) use ($value){ $field->value($value); });
+    }
+    
+    function offsetUnset ($offset){
+        $this->remove($offset);
+    }    
+    
 }
 
 ?>

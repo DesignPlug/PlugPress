@@ -2,7 +2,7 @@
 
 class HTTP {
     
-    static function setRequestVars(Fields $fields, $request = "REQUEST"){
+    static function setRequestVars(\Iterator $fields, $request = "REQUEST"){
         
         switch(strtoupper($request)){
             
@@ -17,19 +17,19 @@ class HTTP {
             break;
         }
         
-        foreach($fields as $fld){
-            if(isset($request[$fld->name()])){
-                $fld->value($request[$fld->name()]);
+        foreach($fields as $name => $val){
+            if(isset($request[$name])){
+                $fields[$name] = $request[$name];
             }
         }
         
     }
     
-    static function setPostVars(Fields $fields){
+    static function setPostVars(\Iterator $fields){
         return self::setRequestVars($fields, "POST");
     }
     
-    static function setGetVars(Fields $fields){
+    static function setGetVars(\Iterator $fields){
         return self::setRequestVars($fields, "GET");
     }    
     
