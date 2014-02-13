@@ -3,7 +3,7 @@
 
 trait Instantiate {
     static function getInstance(){
-        $class = __CLASS__;
+        $class = get_called_class();
         return new $class;
     }
 }

@@ -9,10 +9,10 @@ class Field{
     protected $name,
               $title,
               $description,
-              $value,
+              $value = "",
               $type,
               $options,
-              $namespace;
+              $namespace = "";
 
 
     static function getInstance($name, $type)

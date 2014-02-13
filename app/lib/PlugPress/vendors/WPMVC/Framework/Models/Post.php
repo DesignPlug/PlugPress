@@ -20,7 +20,7 @@ class Post extends \WPMVC\Framework\Model
     
     public function meta()
     {
-        return $this->hasMany();
+        return $this->hasMany('\Plugpress\Models\PostMeta', 'post_id');
     }
 
     public function taxonomies()
@@ -57,10 +57,14 @@ class Post extends \WPMVC\Framework\Model
     {
             $this->post_modified = date('Y-m-d H:i:s');
             $this->post_modified_gmt = gmdate('Y-m-d H:i:s');
-            if (!$this->is_being_published and $this->post_date and $this->post_date_gmt)
-                    return;
+            if (!$this->is_being_published and $this->post_date and $this->post_date_gmt) return;
             $this->post_date = $this->post_modified;
             $this->post_date_gmt = $this->post_modified_gmt;
+    }
+    
+    public function updateMeta(array $meta)
+    {
+
     }
 
     public function validate()
@@ -73,8 +77,8 @@ class Post extends \WPMVC\Framework\Model
     {
             return array(
                     'slug_generator' => array('\WPMVC\Framework\Roles\SlugGenerator',
-                                                            'slug_source_attribute' => 'post_title',
-                                                            'slug_target_attribute' => 'post_name'));
+                                              'slug_source_attribute' => 'post_title',
+                                              'slug_target_attribute' => 'post_name'));
     }
 
     public function scopeStatus($query, $status)

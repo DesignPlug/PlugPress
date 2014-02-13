@@ -9,11 +9,14 @@ class Model extends \Illuminate\Database\Eloquent\Model
 	private $_errors=array();
 	protected $table_inheritance_attribute = false;
 	public $timestamps=false;
+        protected $table_prefix;
 
-	public static $classes_inheriting_from_table = array();
+        public static $classes_inheriting_from_table = array();
 
 	public function __construct($attributes=array())
 	{
+                global $wpdb;
+                $this->table_prefix = $wpdb->prefix;            
 		parent::__construct($attributes);
 		foreach($this->roles() as $name => $role)
 			$this->add_role($name, Component::create($role));

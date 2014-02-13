@@ -26,6 +26,40 @@ class Fields implements \Iterator, \ArrayAccess{
         return $this;
     }
     
+    function arrayToFields($array, $selected_fields = false){
+        if(is_array($selected_fields) || ($selected_fields instanceof \ArrayAccess)){
+            
+            foreach($selected_fields as $field_name => $field_value){
+                
+                //if associative array, use the key as the field name
+                //otherwise use the value
+                if(is_numeric($field_name)) $field_name = $field_value;
+                
+                //remove namespace from copy used to create field
+                //and use namespace for array key
+                $fname    = str_replace($this->namespace, "", $field_name);
+                $ns_fname = $this->namespace .$fname;
+                
+                if(isset($array[$ns_fname])){
+                    $val = $array[$ns_fname];
+                    $this->add(str_replace($this->namespace, "", $fname), function($fld) use ($val){
+                        $fld->value($val);
+                    });
+                }
+            }
+            
+        } else {
+            
+            foreach($array as $k => $v){
+                $this->add(str_replace($this->namespace, "", $k), function($fld) use ($v){
+                    $fld->value($v);
+                });
+            }
+            
+        }
+            
+    }
+    
     function remove($name){
         if(isset($this->fields[$name])) unset($this->fields[$name]);
     }
@@ -51,7 +85,7 @@ class Fields implements \Iterator, \ArrayAccess{
 
     function key() 
     {
-        return key($this->fields);
+        return $this->namespace .key($this->fields);
     }
 
     function next() 
@@ -60,24 +94,24 @@ class Fields implements \Iterator, \ArrayAccess{
     }
 
     function valid() 
-    {
+    { 
         return $this->current();
     }
     
     function offsetExists ( $offset ){
-        return $this->exists($offset);
+        return $this->exists(str_replace($this->namespace, "", $offset));
     }
 
     function offsetGet ( $offset ){
-        return $this->get($offset);
+        return $this->get(str_replace($this->namespace, "", $offset));
     }
     
     function offsetSet ($offset ,$value){
-        $this->add($offset, function($field) use ($value){ $field->value($value); });
+        $this->add(str_replace($this->namespace, "", $offset), function($field) use ($value){ $field->value($value); });
     }
     
     function offsetUnset ($offset){
-        $this->remove($offset);
+        $this->remove(str_replace($this->namespace, "", $offset));
     }    
     
 }

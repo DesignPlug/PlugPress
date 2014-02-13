@@ -17,7 +17,7 @@
         $label          = ($title = $field->title())  ?  $title : str_replace($field->_namespace(), "", $name); 
         $help           = ($h = @$attr['help'])       ?  $h : null;
         $id             = isset($attr['id'])          ?  $attr['id'] : $attr['id'] =  $field->name(); 
-        $value          = isset($attr['value'])      ?  $attr['value'] : $attr['value'] = $field->value();
+        $value          = isset($attr['value'])       ?  $attr['value'] : $attr['value'] = $field->value() ?: $attr['value'] = $field->defaultValue();
         $desc           = $field->description();
         $type           = $field->type();
         $label          = self::label($field->title(), $id);
