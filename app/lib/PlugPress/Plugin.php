@@ -15,7 +15,7 @@
      }
      
      function __get($key){
-         return $this->getConst($key);
+         return $this->getVar($key);
      }
      
      static function __callStatic($fn, $param){
@@ -27,7 +27,7 @@
          }
      }
 
-
+     abstract function init();
      abstract function activate();
      abstract function uninstall();
      abstract function deactivate();

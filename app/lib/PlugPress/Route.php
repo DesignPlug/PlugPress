@@ -36,20 +36,23 @@ class Route {
             //default status heading 200
             HTTP::setHeaderStatus(200);
             
+            //to store returned template
+            $response;
+            
             //if target is an array, that means before and 
             //after callbacks are possibly set
+            
             
             if(is_array($match['target'])){
                 
                 if(isset($match['target']['before'])){
                     
                     //only fire target callback if before doesn't return false
-                    if(self::callTarget($match['target']['before'], $match) !== true){
-                        
-                        self::callTarget($match['target']['cb'], $match['params']); 
+                    if(self::callTarget($match['target']['before'], $match) !== false){
+                        $response = self::callTarget($match['target']['cb'], $match['params']); 
                     }
                 } else {
-                    self::callTarget($match['target']['cb'], $match['params']);
+                    $response = self::callTarget($match['target']['cb'], $match['params']);
                 }
                 
                 //call after callback if given
@@ -58,8 +61,10 @@ class Route {
                 }
                    
             } else {
-                self::callTarget($match['target'], $match['params']);
+                $response = self::callTarget($match['target'], $match['params']);
             }
+            
+            return $response ?: $default_response;
             
         } else {
             return $default_response;

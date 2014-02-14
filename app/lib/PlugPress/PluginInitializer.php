@@ -8,7 +8,8 @@ final class PluginInitializer {
               $plugin_file_name, 
               $namespace,
               $plugin,
-              $plugin_class_name;
+              $plugin_class_name,
+              $base_path;
     
     function __get($name){
         return $this->{$name};
@@ -45,6 +46,7 @@ final class PluginInitializer {
 
         $ns = $this->namespace;
         define($ns ."BASE_DIR", $root_dir .'\wp-content\plugins\\' .$this->plugin_file_name);
+        define($ns ."PLUGIN_FILE", $this->base_path = constant($ns ."BASE_DIR") ."\\" .$this->plugin_file_name .".php");
         define($ns ."APP_DIR",  constant($ns .'BASE_DIR') .'\app');
         define($ns ."PLUGIN_DIR", constant($ns .'APP_DIR') .'\plugin');
         define($ns ."DIR", constant($ns .'PLUGIN_DIR') .'\\' .$this->plugin_name);
@@ -55,6 +57,11 @@ final class PluginInitializer {
         define($ns ."CSS_PATH", '/' .$this->plugin_file_name .'/public/css');
         define($ns ."JS_PATH",  '/' .$this->plugin_file_name .'/public/js');
 
+        //set wp table prefix
+        global $wpdb;
+        define($ns ."DB_PREFIX",  $wpdb->prefix .$ns);
+        
+        
         $this->autoloadInit();
         
         //make constants, views and scripts accessible via Plugin::CONSTANT_NAME()
@@ -64,8 +71,10 @@ final class PluginInitializer {
         $call = "call_user_func";
         $set_const = [$this->plugin, "setVar"];
 
-        $call($set_const, "NAMESPACE", $ns);
+        $call($set_const, "_NAMESPACE", $ns);
         $call($set_const, "BASE_DIR", constant($ns ."BASE_DIR"));
+        $call($set_const, "PLUGIN_FILE", constant($ns ."PLUGIN_FILE"));
+        $call($set_const, "DB_PREFIX", constant($ns ."DB_PREFIX"));
         $call($set_const, "APP_DIR",  constant($ns ."APP_DIR"));
         $call($set_const, "PLUGIN_DIR",  constant($ns ."PLUGIN_DIR"));
         $call($set_const, "VIEWS_DIR",  constant($ns ."VIEWS_DIR"));
@@ -106,9 +115,10 @@ final class PluginInitializer {
         //registers activation/deactivation hooks if bootstrap implements PlugPressBootstrap interface
         if($bootstrap instanceof \Plugpress\Plugin)
         {
-            register_activation_hook($file, array($bootstrap, 'activate'));
-            register_deactivation_hook($file, array($bootstrap, 'deactivate'));
-            register_uninstall_hook($file, array($bootstrap, 'uninstall'));
+            $bootstrap->init();
+            register_activation_hook($this->base_path, [$bootstrap, 'activate']);
+            register_deactivation_hook($this->base_path, [$bootstrap, 'deactivate']);
+            register_uninstall_hook($this->base_path, [$bootstrap, 'uninstall']);
 
             //initialize routes
             $bootstrap->route();

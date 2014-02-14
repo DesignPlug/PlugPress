@@ -142,9 +142,9 @@ abstract class Posttype{
          $posttype     = $this->name;
          $param        = $this->register_param;
          $called_class = $this;
-
+         
          add_action("init", function() use($posttype, $param, $called_class){
-
+             
             register_post_type( $posttype, $param );
             add_action("save_post", [$called_class, "update"]);
             add_action("delete_post", [$called_class, "delete"]);

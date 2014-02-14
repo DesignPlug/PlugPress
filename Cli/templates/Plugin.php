@@ -7,7 +7,7 @@ class Plugin extends \Plugpress\Plugin{
 
     var $register_autoload = false;
  
-    function __construct() {
+    function init() {
         
         //any initialization code
         //ideal for posttype creation etc...

@@ -1,5 +1,7 @@
 <?php
 
+use PlugPress;
+
 /*
 Plugin Name: {The Name of Your Plugin}
 Plugin URI: { The Plugin Url }
@@ -10,8 +12,14 @@ Author URI: { Replace with Your URI }
 License: { Replace }
 */
 
-add_action("plugins_loaded", function(){
-   PlugPress\APP::init("{plugin_name}", "{plugin_file_name}", "{plugin_namespace}"); 
-});
+if(!defined("PLUGPRESS")){
+    require "app/lib/Plugpress/Plugpress.php";
+}
+
+//Plugins are only initiated if Plugpress is activated
+
+if(Plugpress::is_activated()){
+    APP::init("{plugin_name}", "{plugin_file_name}", "{plugin_namespace}");     
+}
 
 ?>

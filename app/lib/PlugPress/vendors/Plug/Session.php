@@ -14,8 +14,12 @@ class Session {
         if($flash === true){     
             $_SESSION[self::$flash_key][$name] = self::$flash_messages[$name] = $value;
         } else {
-            $_SESSION[$name] = $value;
+            $_SESSION[$name] = @$_SESSION[$name] ?: $value;
         }
+    }
+    
+    static function set($name, $value){
+        $_SESSION[$name] = $value;
     }
     
     static function get($name, $flash = false){
