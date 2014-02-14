@@ -8,5 +8,4 @@ Author: Ric Anthony Lee
 Author URI: http://www.designplug.net
 License: MIT
 */
-
 ?>
