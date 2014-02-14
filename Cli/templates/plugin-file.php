@@ -18,8 +18,15 @@ if(!defined("PLUGPRESS")){
 
 //Plugins are only initiated if Plugpress is activated
 
-if(Plugpress::is_activated()){
-    APP::init("{plugin_name}", "{plugin_file_name}", "{plugin_namespace}");     
-}
+Plugpress::run(function(){
+   APP::init("{plugin_name}", "{plugin_file_name}", "{plugin_namespace}");
+   
+}) or add_action('admin_notices', function(){
+    
+   PlugPress::error_notice("<strong>There was an error initializing PlugPress dependent plugin: 
+                           '{plugin_file_name}'.</strong><br/> 
+                           1) Make sure Plugpress is installed and activated. <br/>
+                           2) If Plugpress is already activated, <a href='" .$_SERVER['PHP_SELF'] ."'>try refreshing</a>");
+});
 
 ?>
