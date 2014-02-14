@@ -1,5 +1,6 @@
 <?php namespace {plugin_name};
 
+use \Plugpress\Plugpress as Plugpress;
 use \Plugpress\Route as Route;
 
 
