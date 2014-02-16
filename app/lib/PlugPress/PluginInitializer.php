@@ -115,7 +115,7 @@ final class PluginInitializer {
         //registers activation/deactivation hooks if bootstrap implements PlugPressBootstrap interface
         if($bootstrap instanceof \Plugpress\Plugin)
         {
-            $bootstrap->init();
+            add_action("plugins_loaded", [$bootstrap, 'init']);
             register_activation_hook($this->base_path, [$bootstrap, 'activate']);
             register_deactivation_hook($this->base_path, [$bootstrap, 'deactivate']);
             register_uninstall_hook($this->base_path, [$bootstrap, 'uninstall']);
