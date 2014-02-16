@@ -59,7 +59,7 @@ final class PluginInitializer {
 
         //set wp table prefix
         global $wpdb;
-        define($ns ."DB_PREFIX",  $wpdb->prefix .$ns);
+        define($ns ."DB_PREFIX", strtolower($wpdb->prefix .$ns));
         
         
         $this->autoloadInit();
