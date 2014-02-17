@@ -40,7 +40,7 @@
         //return wrapped element, if wrap is true
         
        if($wrap)
-            return self::wrap($field, $mkup, ['help'=>$help, 'label' => $label, 'input' => $mkup]);
+            return self::wrap($field, $mkup, array('help'=>$help, 'label' => $label, 'input' => $mkup));
         
         //else return mark up without wrapper
         
@@ -54,11 +54,11 @@
     
     
     static function TextAreaHTML($attr){
-        return "<textarea " .self::attr_to_string($attr, ['value', 'help']) .">" .@$attr['value']  ."</textarea>";
+        return "<textarea " .self::attr_to_string($attr, array('value', 'help')) .">" .@$attr['value']  ."</textarea>";
     }
     
     static function selectHTML($options, $attr){
-        $mkup = '<select ' .self::attr_to_string($attr, ['value', 'help']) .'>' . self::optionHTML($attr['value']);
+        $mkup = '<select ' .self::attr_to_string($attr, array('value', 'help')) .'>' . self::optionHTML($attr['value']);
 
          foreach($options as $opt){
              if($opt->name() === $attr['value']->name())  continue;

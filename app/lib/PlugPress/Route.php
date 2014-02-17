@@ -42,7 +42,6 @@ class Route {
             //if target is an array, that means before and 
             //after callbacks are possibly set
             
-            
             if(is_array($match['target'])){
                 
                 if(isset($match['target']['before'])){
@@ -84,18 +83,18 @@ class Route {
     
     
     static function map($method, $route, $target, $name = null){
-       return call_user_func_array([self::getRouter(), "map"], func_get_args());
+       return call_user_func_array(array(self::getRouter(), "map"), func_get_args());
     }
     
     static function __callStatic($fn, $param){
         if(in_array(strtoupper($fn), self::$request_types)){
-            return call_user_func_array(["\Plugpress\Route", "map"], array_merge([$fn], $param));
+            return call_user_func_array(array("\Plugpress\Route", "map"), array_merge((array) $fn, $param));
         }
         throw new \BadMethodCallException("call to undefined method $fn \Plugpress\Route");
     }
     
     static function getRouter(){
-        return self::$router ?: self::$router = new \AltoRouter([], basename(site_url()) ."/");
+        return self::$router ?: self::$router = new \AltoRouter(array(), basename(site_url()) ."/");
     }
 }
  

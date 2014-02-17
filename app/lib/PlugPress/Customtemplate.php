@@ -1,4 +1,4 @@
-<?php namespace PlugPress;
+<?php namespace Plugpress;
 
 abstract class CustomTemplate implements Template{
 

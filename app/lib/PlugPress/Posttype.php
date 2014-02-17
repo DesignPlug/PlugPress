@@ -1,17 +1,13 @@
-<?php namespace PlugPress;
+<?php namespace Plugpress;
 
-use \Plug\Session as Session;
+
 use \Plug\Validator as Validator;
 use \Plug\traits\Instantiate as Instantiate;
 use \Plug\traits\Gettable as Gettable;
 use \Plug\traits\Fields as Fields;
 use \Plug\HTTP as HTTP;
 
-abstract class Posttype{
-    
-    use Instantiate;  
-    use Gettable;
-    use Fields;
+abstract class Posttype{ 
     
     static protected $registered_posttypes,
                      $registered_posttypes_class;
@@ -20,24 +16,43 @@ abstract class Posttype{
     protected $name,
               $labels = array(),
               $register_param,
-              $namespace;
+              $namespace,
+              $fields;
     
     function __toString()
     {
         return $this->name;
-    }  
+    }
     
     static function __callStatic($name, $param)
     {
         $posttype = get_called_class();
         $posttype = $posttype::get();
         if($posttype){
-            return call_user_func_array([$posttype, $name], $param);
+            return call_user_func_array(array($posttype, $name), $param);
         }
         throw new \Exception("cannot call ::" .$name ." on non registered posttype. 
                               Must register first eg." .get_called_class() ."::create()");
     }
+    
+    function __get($var){
+        return @$this->$var;
+    }
+    
+    static function getInstance(){
+        $class = get_called_class();
+        return new $class;
+    }    
 
+    function Fields($namespace = "")
+    {
+        $this->namespace = $this->namespace ?: $namespace;
+        
+        if(!isset($this->fields)){
+            $this->fields = new \Plug\Fields($this->namespace);
+        }
+        return $this->fields;
+    } 
 
     static function create()
     {      
@@ -89,7 +104,7 @@ abstract class Posttype{
     
     function init(){
          //if no label name given use pluralized posttype name
-         if(!$this->labels['name']) 
+         if(!isset($this->labels['name'])) 
              $this->labels['name'] = _x(\Inflector::titleize(\Inflector::pluralize($this->name)), 'Post Type General Name');
 
          //if no singular name given, use singularized @label['name']
@@ -146,8 +161,8 @@ abstract class Posttype{
          add_action("init", function() use($posttype, $param, $called_class){
              
             register_post_type( $posttype, $param );
-            add_action("save_post", [$called_class, "update"]);
-            add_action("delete_post", [$called_class, "delete"]);
+            add_action("save_post", array($called_class, "update"));
+            add_action("delete_post", array($called_class, "delete"));
             
          });
     }

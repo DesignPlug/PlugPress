@@ -1,6 +1,6 @@
 <?php namespace Plugpress;
 
- abstract class Plugin implements \PlugPress\Bootstrap{
+ abstract class Plugin implements \Plugpress\Bootstrap{
    
      static protected $constants = array();
      static protected $namespace;

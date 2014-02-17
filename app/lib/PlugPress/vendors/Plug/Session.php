@@ -6,7 +6,11 @@ class Session {
     static protected $flash_messages = array();
     static protected $flash_key = "flash";
     
-    static function start(){
+    static function start($session_path = null){
+        if(isset($session_path)){
+            session_save_path($session_path);
+            ini_set('session.gc_probability', 1); 
+        }
         session_start();
     }
     

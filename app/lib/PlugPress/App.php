@@ -1,6 +1,8 @@
-<?php namespace PlugPress;
+<?php namespace Plugpress;
 
 use \Plug\Autoloader as Autoloader;
+use \Plug\Session as Session;
+use \Plugpress\Plugpress as Plugpress;
 use \Illuminate\Database\Capsule\Manager as Capsule;
 use \Illuminate\Events\Dispatcher;
 use \Illuminate\Container\Container;
@@ -8,11 +10,11 @@ use \Illuminate\Container\Container;
 
 if(!function_exists("DS")){
     function DS($path){
-        return str_replace(["/","\\"], DIRECTORY_SEPARATOR, $path);
+        return Plugpress::DS($path);
     }
 }
 
-if(!class_exists("PlugPress\APP")){
+if(!class_exists("Plugpress\APP")){
     
     
     class APP {
@@ -27,28 +29,24 @@ if(!class_exists("PlugPress\APP")){
                 
                 if(count(self::$plugins) === 0) 
                 {
-                    require 'vendors/Plug/autoloader.php';
-                    
-                    //define Plugpress App Dir
-
-                    define("Plugpress_APP_DIR", DS(ABSPATH . 'wp-content\plugins\plugpress\app'));
-                
-                    //start session 
-                    add_action("init", ['\Plug\Session', 'start']);
-                    
-                    //create route 
-                    add_action("init", ["\Plugpress\Route", "create"]);
+                    require 'vendors/Plug/Autoloader.php';
                     
                    //register core and core vendors dir
-                    spl_autoload_register([new Autoloader(\Plugpress_APP_DIR .'\lib\\'), 'load']);
-                    spl_autoload_register([new Autoloader(\Plugpress_APP_DIR .'\lib\Plugpress\vendors\\'), 'load']);
-                    spl_autoload_register([new Autoloader(\Plugpress_APP_DIR .'\lib\Plugpress\vendors\{class}\\'), 'load']);
+                    spl_autoload_register(array(new Autoloader(Plugpress::APP_DIR('\lib\\') ), 'load'));
+                    spl_autoload_register(array(new Autoloader(Plugpress::DIR('\vendors\\') ), 'load'));
+                    spl_autoload_register(array(new Autoloader(Plugpress::DIR('\vendors\{class}\\') ), 'load'));
+                    
+                    //start session 
+                    Session::start(DS(Plugpress::DIR('\sessions')));
                     
                     //load db
                     self::loadDB();
                     
+                    //create route 
+                    add_action("init", array("\Plugpress\Route", "create"));
+                    
                     //kill  all flashes at the end  of sessions
-                    add_action("shutdown", ['\Plug\Session', 'clearFlash']);
+                    add_action("shutdown", array('\Plug\Session', 'clearFlash'));
                 }
                 
                 //bootstrap plugin application
@@ -57,7 +55,7 @@ if(!class_exists("PlugPress\APP")){
             }
             else
             {
-                throw new Exception("Attempted to call PlugPress\APP:init on " .$plugin_name ." twice");
+                throw new Exception("Attempted to call Plugpress\APP:init on " .$plugin_name ." twice");
             }
         }
         
@@ -68,7 +66,7 @@ if(!class_exists("PlugPress\APP")){
         static protected function loadDB()
         {
             //require Composer autoloader
-            require \Plugpress_APP_DIR .'\lib\Plugpress\vendors\WPMVC\vendor\autoload.php';            
+            require Plugpress::DIR('\vendors\WPMVC\vendor\autoload.php');            
             
             $capsule = new Capsule();
             $capsule->addConnection(array(

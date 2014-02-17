@@ -132,9 +132,10 @@ class AltoRouter {
 			$requestUrl = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
 		}
 
-		// strip base path from request url
-		$requestUrl = substr($requestUrl, strlen($this->basePath));
-
+		// strip base path from request url 
+		$requestUrl = str_replace($this->basePath, "", $requestUrl, $i = 1);
+                        //substr($requestUrl, strlen($this->basePath), strlen($requestUrl));
+                
 		// Strip query string (?a=b) from Request Url
 		if (($strpos = strpos($requestUrl, '?')) !== false) {
 			$requestUrl = substr($requestUrl, 0, $strpos);

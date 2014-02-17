@@ -3,22 +3,27 @@
 
 class Field{
     
-    //use traits\ValidInputTypes;
-    use traits\PropertyMethods;
-    
     protected $name,
               $title,
               $description,
               $value = "",
               $type,
               $options,
-              $namespace = "";
+              $namespace = "",
+              $properties = array();
 
 
     static function getInstance($name, $type)
     {
         $field = __CLASS__;
         return new $field($name, $type);
+    }
+    
+    function __call($fn, $param){
+        if(count($param) === 0) return @$this->properties[$fn];
+        
+        $this->properties[$fn] = $param[0];
+        return $this;
     }
     
     function __construct($name, $type) {

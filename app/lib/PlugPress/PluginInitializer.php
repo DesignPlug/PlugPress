@@ -69,7 +69,7 @@ final class PluginInitializer {
         $this->plugin = new $this->plugin_class_name;
         
         $call = "call_user_func";
-        $set_const = [$this->plugin, "setVar"];
+        $set_const = array($this->plugin, "setVar");
 
         $call($set_const, "_NAMESPACE", $ns);
         $call($set_const, "BASE_DIR", constant($ns ."BASE_DIR"));
@@ -104,7 +104,7 @@ final class PluginInitializer {
     
     protected function autoloadInit(){
         //register autoload path to plugin
-        spl_autoload_register([new Autoloader(constant($this->namespace .'PLUGIN_DIR')), 'load']);        
+        spl_autoload_register(array(new Autoloader(constant($this->namespace .'PLUGIN_DIR')), 'load'));        
     }
     
     protected function bootstrap(){
@@ -115,10 +115,10 @@ final class PluginInitializer {
         //registers activation/deactivation hooks if bootstrap implements PlugPressBootstrap interface
         if($bootstrap instanceof \Plugpress\Plugin)
         {
-            add_action("plugins_loaded", [$bootstrap, 'init']);
-            register_activation_hook($this->base_path, [$bootstrap, 'activate']);
-            register_deactivation_hook($this->base_path, [$bootstrap, 'deactivate']);
-            register_uninstall_hook($this->base_path, [$bootstrap, 'uninstall']);
+            add_action("plugins_loaded", array($bootstrap, 'init'));
+            register_activation_hook($this->base_path, array($bootstrap, 'activate'));
+            register_deactivation_hook($this->base_path, array($bootstrap, 'deactivate'));
+            register_uninstall_hook($this->base_path, array($bootstrap, 'uninstall'));
 
             //initialize routes
             $bootstrap->route();
