@@ -1,13 +1,13 @@
 <?php namespace Plugpress;
 
-
 use \Plug\Validator as Validator;
 use \Plug\traits\Instantiate as Instantiate;
 use \Plug\traits\Gettable as Gettable;
 use \Plug\traits\Fields as Fields;
 use \Plug\HTTP as HTTP;
+use Plug\Interfaces\Initable as Initable;
 
-abstract class Posttype{ 
+abstract class Posttype implements Initable{ 
     
     static protected $registered_posttypes,
                      $registered_posttypes_class;
@@ -61,15 +61,16 @@ abstract class Posttype{
        $posttype            = $posttype_class_name::getInstance();
        
        //register and init, if not registered
-       if(!isset(self::$registered_posttypes[$posttype->name])){
+       if(!isset(self::$registered_posttypes[$posttype->name]) || !$posttype->is_page_or_post()){
 
            //init
            $posttype->init();
            
            //register
-           self::$registered_posttypes[$posttype->name] = $posttype_class_name;
-           self::$registered_posttypes_class[$posttype_class_name] = $posttype->name;
-           
+           if(!$posttype->is_page_or_post()){
+                self::$registered_posttypes[$posttype->name] = $posttype_class_name;
+                self::$registered_posttypes_class[$posttype_class_name] = $posttype->name;
+           }
        } else {
            throw new \Exception("cannot create post type '" .$posttype->name ."' twice");
        }
@@ -101,6 +102,14 @@ abstract class Posttype{
                     update_post_meta($id, $field->name(), $field->value());
         }
     }    
+    
+    function is_page_or_post(){
+        $posttype = trim(strtolower($this->name));
+        if($posttype === "post" || $posttype === "page"){
+            return true;
+        }
+        return false;
+    }
     
     function init(){
          //if no label name given use pluralized posttype name

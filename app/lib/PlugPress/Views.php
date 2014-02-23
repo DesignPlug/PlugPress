@@ -3,7 +3,8 @@
 
 class Views{
 
-    static protected $views = array();
+    static protected $views = array(),
+                     $data  = array();
     
     static function getInstance($namespace) {
         if(!isset(self::$views[$namespace])){
@@ -26,6 +27,30 @@ class Views{
     
     static function create($namespace, $dir, Scripts $scripts_object){
         return self::add($namespace, $dir, $scripts_object);
+    }
+    
+    static function setData($file, $data){
+        $file = strtolower($file);
+        if(isset(self::$data[$file])){
+            self::$data = array_merge(self::$data[$file], $data);
+        } else {
+            self::$data[$file] = $data;
+        }
+    }
+    
+    /**
+     * 
+     * if getData is called from a file that has data bound to it
+     * we can get the view data without specifiying a namespace
+     * 
+     **/
+    
+    static function getData(){
+        
+        $trace         = debug_backtrace();
+        $calling_file  = strtolower($trace[0]['file']);
+        if(isset(self::$data[$calling_file]))
+            return self::$data[$calling_file];
     }
 }
 

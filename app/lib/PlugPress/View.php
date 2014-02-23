@@ -12,7 +12,14 @@ class View extends CustomTemplate{
         $this->scripts_object = $scripts_object;
     }
     
-    function add($key, $value){
+    function add($key, $value = null){
+        if(is_array($key)){
+            foreach($key as $k => $v){
+                $this->view_data[$k] = $v;
+            }
+            return $this;
+        }
+        
         $this->view_data[$key] = $value;
         return $this;
     }
@@ -27,9 +34,11 @@ class View extends CustomTemplate{
         if($view instanceof \Plugpress\View){
             return $this->add($key, $view);
         } else {
-            $dir = $this->template_dir;
-            return $this->add($key, new \Plug\_closure(function() use ($dir, $view) {
+            $dir     = $this->template_dir;
+            $ViewObj = $this;
+            return $this->add($key, new \Plug\_closure(function() use ($dir, $view, $ViewObj) {
                             $sep = DIRECTORY_SEPARATOR;
+                            $data = $ViewObj->getData();
                             include rtrim($dir, $sep) .$sep .str_replace(array("/","\\"), $sep, $view) .".php";
                           }));   
         }
@@ -61,6 +70,24 @@ class View extends CustomTemplate{
         $this->templateInclude();
     }
     
+    function json_render($return = false){
+        if(isset($this->file)){
+            
+            if($return){
+                ob_start();
+                $this->render();
+                return ob_get_clean();
+            }
+            $this->render();
+        } else {
+            $data = json_encode($this->view_data);
+            if($return){
+                return $data;
+            }
+            echo $data;
+        }
+    }
+    
     function view($file){
         $this->file = $file;
         return $this;
@@ -73,7 +100,12 @@ class View extends CustomTemplate{
     
     function templateInclude($template = null)
     {
+        Views::setData($this->view_path($this->file, '.php'), $this->getData());
         return $this->getTemplate($this->file);
+    }
+    
+    function view_path($path = "", $ext = ""){
+        return Plugpress::DS($this->template_dir ."\\" .$path, $ext);
     }
     
     function loadTemplateStyles($template = null) {

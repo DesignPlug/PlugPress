@@ -14,8 +14,7 @@ if(!function_exists("DS")){
     }
 }
 
-if(!class_exists("Plugpress\APP")){
-    
+if(!class_exists("Plugpress\APP")){ 
     
     class APP {
         
@@ -32,12 +31,12 @@ if(!class_exists("Plugpress\APP")){
                     require 'vendors/Plug/Autoloader.php';
                     
                    //register core and core vendors dir
-                    spl_autoload_register(array(new Autoloader(Plugpress::APP_DIR('\lib\\') ), 'load'));
-                    spl_autoload_register(array(new Autoloader(Plugpress::DIR('\vendors\\') ), 'load'));
-                    spl_autoload_register(array(new Autoloader(Plugpress::DIR('\vendors\{class}\\') ), 'load'));
+                    spl_autoload_register(array(new Autoloader(Plugpress::APP_DIR('lib\\') ), 'load'));
+                    spl_autoload_register(array(new Autoloader(Plugpress::DIR('vendors\\') ), 'load'));
+                    spl_autoload_register(array(new Autoloader(Plugpress::DIR('vendors\{class}\\') ), 'load'));
                     
                     //start session 
-                    Session::start(DS(Plugpress::DIR('\sessions')));
+                    Session::start(DS(Plugpress::DIR('sessions')));
                     
                     //load db
                     self::loadDB();

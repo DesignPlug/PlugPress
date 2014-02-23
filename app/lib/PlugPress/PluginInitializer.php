@@ -98,13 +98,16 @@ final class PluginInitializer {
 
         //shorthand to get view vars
         $call($set_const, "ViewData", function() use ($ns){
-                    \Plugpress\Views::getInstance($ns);
+                    Views::getInstance($ns);
         });
     }
     
     protected function autoloadInit(){
         //register autoload path to plugin
-        spl_autoload_register(array(new Autoloader(constant($this->namespace .'PLUGIN_DIR')), 'load'));        
+        spl_autoload_register(array(new Autoloader(constant($this->namespace .'PLUGIN_DIR')), 'load'));  
+        //register plugin vendors path
+        spl_autoload_register(array(new Autoloader(constant($this->namespace .'PLUGIN_DIR') ."\vendors\\"), 'load'));  
+        spl_autoload_register(array(new Autoloader(constant($this->namespace .'PLUGIN_DIR') ."\vendors\{class}\\"), 'load'));  
     }
     
     protected function bootstrap(){

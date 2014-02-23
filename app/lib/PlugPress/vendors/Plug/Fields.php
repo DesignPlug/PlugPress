@@ -42,7 +42,7 @@ class Fields implements \Iterator, \ArrayAccess{
                 
                 if(isset($array[$ns_fname])){
                     $val = $array[$ns_fname];
-                    $this->add(str_replace($this->namespace, "", $fname), function($fld) use ($val){
+                    $this->add($fname, function($fld) use ($val){
                         $fld->value($val);
                     });
                 }

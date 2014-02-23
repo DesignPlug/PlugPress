@@ -37,6 +37,10 @@ class AltoRouter {
 	public function setBasePath($basePath) {
 		$this->basePath = $basePath;
 	}
+        
+        public function getBasePath(){
+                return $this->basePath;
+        }
 
 	/**
 	 * Add named match types. It uses array_merge so keys can be overwritten.
@@ -113,7 +117,7 @@ class AltoRouter {
 
 		}
 
-		return $url;
+		return str_replace("//", "/", $url);
 	}
 
 	/**

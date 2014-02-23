@@ -2,18 +2,20 @@
 
 abstract class Controller {
     
-    function __construct($method = null) {
-        if(isset($method)){
-            if(!method_exists($this, $method)){
-                throw new \BadMethodCallException("method: " .$method ." does not exist for " .get_called_class());
-            }
+    protected $View, $ajaxOnly;
+    
+    function __get($var){
+        return @$this->$var;
+    }
+    
+    function get404(){
+        if(!Plugpress::DB()->is_404){
+            HTTP::setHeaderStatus(404);
+            return $this->View->view("404.php")->wp_render();
         }
     }
     
-    static final function getInstance($method = null){
-        $cls = get_called_class();
-        return new $cls($method);
-    }
+    
 }
 
 ?>

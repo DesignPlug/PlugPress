@@ -11,6 +11,10 @@ class HTTP extends \Plug\HTTP{
         }
         status_header($status);
     }
+    
+    static function __callStatic($fn, $param){
+        return call_user_func_array(array("\Plugpress\Route", $fn), $param);
+    }
 
 }
 

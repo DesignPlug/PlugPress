@@ -7,13 +7,6 @@ class Route {
     static protected $created = false;
     static protected $router;
     static protected $request_types = array("GET", "POST", "DELETE", "PUT");
-    static public $ignore_methods = array('__construct',
-                                          '__get',
-                                          '__set',
-                                          '__call',
-                                          '__callStatic',
-                                          '__destruct',
-                                          'getInstance');
     
     
     static function create(){
@@ -75,7 +68,12 @@ class Route {
     static protected function callTarget($target, $param){
         if(!is_callable($target)){
             $target = explode('#', trim($target));
-            $target[0] = new $target[0]; 
+            $target[0] = new $target[0];
+            if($target[0] instanceof \Plugpress\Controller){
+                if($target[0]->ajaxOnly === true && !HTTP::isAjaxRequest()){
+                    $target[1] = 'get404';
+                }
+            }
         }
 
         return call_user_func_array($target, $param); 
@@ -95,6 +93,15 @@ class Route {
     
     static function getRouter(){
         return self::$router ?: self::$router = new \AltoRouter(array(), basename(site_url()) ."/");
+    }
+    
+    static function URL($route, $param = array()){
+        $path = ltrim(self::getRouter()->generate($route, $param), self::getRouter()->getBasePath());
+        return site_url($path);
+    }
+    
+    static function redirect($to, $status = 302){
+        return wp_redirect($to, $status);
     }
 }
  
