@@ -38,12 +38,12 @@ class Post extends \WPMVC\Framework\Model
 
     public function add_rules_to($validator)
     {
-            $validator->rule('required',['post_status', 'post_author', 'post_name', 'post_type',  'post_title']);
-            $validator->rule('in', 'post_status', ['publish', 'draft', 'pending', 'future', 'trash']);
+            $validator->rule('required',array('post_status', 'post_author', 'post_name', 'post_type',  'post_title'));
+            $validator->rule('in', 'post_status', array('publish', 'draft', 'pending', 'future', 'trash'));
             $validator->rule('slug', 'post_name');
-            $validator->rule('exists', 'post_author', ['class_name' => '\WPMVC\Framework\Models\User'])
+            $validator->rule('exists', 'post_author', array('class_name' => '\WPMVC\Framework\Models\User'))
                       ->message('Post Author must be an existing user');
-            $validator->rule('dateFormat', ['post_date', 'post_date_gmt', 'post_modified', 'post_modified_gmt'],
+            $validator->rule('dateFormat', array('post_date', 'post_date_gmt', 'post_modified', 'post_modified_gmt'),
                              'Y-m-d H:i:s');
     }
 

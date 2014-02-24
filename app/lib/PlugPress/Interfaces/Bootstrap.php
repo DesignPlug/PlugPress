@@ -1,4 +1,4 @@
-<?php namespace PlugPress;
+<?php namespace PlugPress\Interfaces;
 
 interface Bootstrap {
     function init();

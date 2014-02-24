@@ -1,6 +1,6 @@
 <?php namespace Plugpress;
 
-abstract class CustomTemplate implements Template{
+abstract class CustomTemplate{
 
     protected $template;
     protected $posttype;
