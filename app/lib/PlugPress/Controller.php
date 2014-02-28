@@ -2,7 +2,7 @@
 
 abstract class Controller {
     
-    protected $View, $ajaxOnly;
+    protected $View, $ajaxOnly, $plugin;
     
     function __get($var){
         return @$this->$var;
@@ -13,6 +13,12 @@ abstract class Controller {
             HTTP::setHeaderStatus(404);
             return $this->View->view("404.php")->wp_render();
         }
+    }
+    
+    function getView($path = false){
+        $plugin = $this->plugin;
+        $path = $path ?: $plugin::VIEWS_DIR();
+        return new View($path, $plugin::Scripts());
     }
     
     

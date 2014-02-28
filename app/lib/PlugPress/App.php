@@ -28,12 +28,17 @@ if(!class_exists("Plugpress\APP")){
                 
                 if(count(self::$plugins) === 0) 
                 {
-                    require 'vendors/Plug/Autoloader.php';
+                    require Plugpress::DIR('vendors\Plug\Autoloader.php');
+                    require Plugpress::DIR('vendors\WPMVC\vendor\autoload.php');
+                    require 'Helpers.php';
                     
                    //register core and core vendors dir
                     spl_autoload_register(array(new Autoloader(Plugpress::APP_DIR('lib\\') ), 'load'));
                     spl_autoload_register(array(new Autoloader(Plugpress::DIR('vendors\\') ), 'load'));
                     spl_autoload_register(array(new Autoloader(Plugpress::DIR('vendors\{class}\\') ), 'load'));
+                    spl_autoload_register(array(new Autoloader(Plugpress::DIR('vendors\WPMVC\vendor\\') ), 'load'));
+                    
+                    self::setLangDir();    
                     
                     //start session 
                     Session::start(DS(Plugpress::DIR('sessions')));
@@ -63,10 +68,7 @@ if(!class_exists("Plugpress\APP")){
         }
         
         static protected function loadDB()
-        {
-            //require Composer autoloader
-            require Plugpress::DIR('\vendors\WPMVC\vendor\autoload.php');            
-            
+        {   
             $capsule = new Capsule();
             $capsule->addConnection(array(
                     'driver' => 'mysql',
@@ -80,6 +82,11 @@ if(!class_exists("Plugpress\APP")){
             $capsule->setEventDispatcher(new Dispatcher(new Container()));
             $capsule->setAsGlobal();
             $capsule->bootEloquent();
+        }
+        
+        static protected function setLangDir()
+        {
+            \Valitron\Validator::langDir(Plugpress::DIR('vendors\WPMVC\vendor\Valitron\lang'));
         }
     }
     

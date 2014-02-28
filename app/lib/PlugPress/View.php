@@ -39,7 +39,7 @@ class View extends CustomTemplate{
             return $this->add($key, new \Plug\_closure(function() use ($dir, $view, $ViewObj) {
                             $sep = DIRECTORY_SEPARATOR;
                             $data = $ViewObj->getData();
-                            include rtrim($dir, $sep) .$sep .str_replace(array("/","\\"), $sep, $view) .".php";
+                            include rtrim($dir, $sep) .$sep .Plugpress::DS($view) .".php";
                           }));   
         }
     }
@@ -70,13 +70,17 @@ class View extends CustomTemplate{
         $this->templateInclude();
     }
     
+    function ob_render(){
+        ob_start();
+        $this->render();
+        return ob_get_clean();
+    }
+    
     function json_render($return = false){
         if(isset($this->file)){
             
             if($return){
-                ob_start();
-                $this->render();
-                return ob_get_clean();
+                return $this->ob_render();
             }
             $this->render();
         } else {
@@ -111,6 +115,10 @@ class View extends CustomTemplate{
     function loadTemplateStyles($template = null) {
         if(is_callable($this->scripts_callback))
             call_user_func ($this->scripts_callback, $this->scripts_object);
+    }
+    
+    function __get($name){
+        return $this->view_data[$name];
     }
     
     
