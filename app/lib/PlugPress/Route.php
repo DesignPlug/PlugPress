@@ -65,7 +65,7 @@ class Route {
         
     }
     
-    static protected function callTarget($target, $param){
+    static function callTarget($target, $param){
         if(!is_callable($target)){
             $target = explode('#', trim($target));
             $target[0] = new $target[0];
@@ -96,7 +96,7 @@ class Route {
     }
     
     static function URL($route, $param = array()){
-        $path = ltrim(self::getRouter()->generate($route, $param), self::getRouter()->getBasePath());
+        $path = str_replace(self::getRouter()->getBasePath(), "", self::getRouter()->generate($route, $param), $count = 1);
         return site_url($path);
     }
     

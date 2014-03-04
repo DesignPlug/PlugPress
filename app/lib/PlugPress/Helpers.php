@@ -42,4 +42,13 @@ function strip_non_numeric($str){
     return preg_replace('/\D/', '', $str);
 }
 
+
+function parse_callable($callable){
+    if(!is_callable($callable)){
+        $callable = explode('#', trim($callable));
+        $callable[0] = new $callable[0];
+    }
+    return $callable;    
+}
+
 ?>

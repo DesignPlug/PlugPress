@@ -178,23 +178,26 @@ abstract class Posttype implements Initable{
     
     function load_meta_boxes()
     {
-        $post = $this;
-        add_meta_box($this->name ."_meta_box",  
-                     $this->labels['name'] ." meta",
-                     function() use($post){
-            
-                            $post->setPostMeta(get_the_ID());
-                            
-                            $form_inputs = "";
-                            
-                            if($flds = $post->Fields()){
-                                foreach($flds as $field){
-                                    $form_inputs .= \Plug\Form::input($field);
+        if(isset($this->fields)){
+        
+            $post = $this;
+            add_meta_box($this->name ."_meta_box",  
+                         $this->labels['name'] ." meta",
+                         function() use($post){
+
+                                $post->setPostMeta(get_the_ID());
+
+                                $form_inputs = "";
+
+                                if($flds = $post->Fields()){
+                                    foreach($flds as $field){
+                                        $form_inputs .= \Plug\Form::input($field);
+                                    }
                                 }
-                            }
-                            echo "<table class='form-table'>" .$form_inputs ."</table>";
-                     }, 
-                     $post->name);
+                                echo "<table class='form-table'>" .$form_inputs ."</table>";
+                         }, 
+                         $post->name);
+        }
     }
 
     function update() 

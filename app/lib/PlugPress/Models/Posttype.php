@@ -21,7 +21,16 @@ abstract class Posttype extends \WPMVC\Framework\Models\Post{
     
     static function all($columns = array('*')){
         $cls = get_called_class();
-        return parent::where('post_type', '=', $cls::$post_type)->get();
+        return parent::where('post_type', '=', $cls::$post_type)->get($columns);
+    }
+    
+    static function get_posts(array $columns = array('*')){
+        return self::posts()->get($columns);
+    }
+    
+    static function posts(){
+        $cls = get_called_class();
+        return parent::where('post_status', '=', 'publish')->where('post_type', '=', $cls::$post_type);
     }
     
     function save(array $options){

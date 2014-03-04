@@ -198,6 +198,7 @@ class Model extends \Illuminate\Database\Eloquent\Model
 					return call_user_func_array(array($object,$name),$parameters);
 		if(class_exists('Closure', false) && $this->can_get_property($name) && $this->$name instanceof Closure)
 						return call_user_func_array($this->$name, $parameters);
+
 		return parent::__call($name, $parameters);
 	}
 

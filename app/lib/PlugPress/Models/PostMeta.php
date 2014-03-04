@@ -33,7 +33,7 @@ class PostMeta extends \WPMVC\Framework\Model{
         $options['validate'] = true;
         return parent::save($options);
     }
-    
+  
     function add_rules_to($validator){
         $validator->rule('required', array('meta_key', 'meta_id', 'post_id'));
     }
