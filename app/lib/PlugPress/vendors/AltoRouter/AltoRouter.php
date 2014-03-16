@@ -99,14 +99,14 @@ class AltoRouter {
 		$url = $this->basePath . $route;
 
 		if (preg_match_all('`(/|\.|)\[([^:\]]*+)(?::([^:\]]*+))?\](\?|)`', $route, $matches, PREG_SET_ORDER)) {
-
+                    
 			foreach($matches as $match) {
 				list($block, $pre, $type, $param, $optional) = $match;
 
 				if ($pre) {
 					$block = substr($block, 1);
 				}
-
+                                
 				if(isset($params[$param])) {
 					$url = str_replace($block, $params[$param], $url);
 				} elseif ($optional) {

@@ -71,6 +71,9 @@ abstract class CustomTemplate{
         else
             $tag = $this->filter_tag;
 
+        
+        $file = Plugpress::DS($file);
+        
         //if rediect is true, include template only
         //but if it is false filter content area
 

@@ -50,9 +50,9 @@ final class PluginInitializer {
         define($ns ."APP_DIR",  constant($ns .'BASE_DIR') .'\app');
         define($ns ."PLUGIN_DIR", constant($ns .'APP_DIR') .'\plugin');
         define($ns ."DIR", constant($ns .'PLUGIN_DIR') .'\\' .$this->plugin_name);
-        define($ns ."VIEWS_DIR",   constant($ns .'DIR') .'\views');
-        define($ns ."CTRL_DIR",   constant($ns .'DIR') .'\controllers');
-        define($ns ."MODELS_DIR",   constant($ns .'DIR') .'\models');
+        define($ns ."VIEWS_DIR",   constant($ns .'DIR') .'\Views');
+        define($ns ."CTRL_DIR",   constant($ns .'DIR') .'\Controllers');
+        define($ns ."MODELS_DIR",   constant($ns .'DIR') .'\Models');
         define($ns ."PUBLIC_DIR",  constant($ns .'BASE_DIR') .'\public');
         define($ns ."CSS_PATH", '/' .$this->plugin_file_name .'/public/css');
         define($ns ."JS_PATH",  '/' .$this->plugin_file_name .'/public/js');
@@ -121,7 +121,7 @@ final class PluginInitializer {
             add_action("plugins_loaded", array($bootstrap, 'init'));
             register_activation_hook($this->base_path, array($bootstrap, 'activate'));
             register_deactivation_hook($this->base_path, array($bootstrap, 'deactivate'));
-            register_uninstall_hook($this->base_path, array($bootstrap, 'uninstall'));
+            register_uninstall_hook($this->base_path, $bootstrap->uninstall());
 
             //initialize routes
             $bootstrap->route();

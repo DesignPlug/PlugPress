@@ -33,6 +33,16 @@ abstract class Posttype extends \WPMVC\Framework\Models\Post{
         return parent::where('post_status', '=', 'publish')->where('post_type', '=', $cls::$post_type);
     }
     
+    
+    static function get_posts_with_thumbnails(array $columns, $callback){
+        return self::get(function($db) use($callback, $columns){
+                            $bldr = $db::posts()->with('meta');
+                            $bldr = call_user_func($callback, $bldr);
+                            return $bldr->get($columns);
+                        })->with_thumbnails();
+    }
+    
+    
     function save(array $options){
         return parent::save($options);
     }

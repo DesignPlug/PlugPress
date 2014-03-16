@@ -26,12 +26,12 @@ class Post extends \WPMVC\Framework\Model
     
     public function get_postmeta()
     {
-        if(empty($this->postmeta)){
+        if(!$this->postmeta){
             $values = array();
             foreach($this->meta as $meta){
                 $values[$meta->meta_key] = $meta->meta_value;
             }
-            $this->postmeta = $values;
+            $this->postmeta = (object) $values;
         }
         return $this->postmeta;
     }
@@ -41,7 +41,7 @@ class Post extends \WPMVC\Framework\Model
         $found = false;
         foreach($this->meta as $meta){
             if($meta->meta_key === $key){
-                $meta->meta_value = $this->postmeta[$key] = $value;
+                $meta->meta_value = $this->postmeta->$key = $value;
                 $found = true;
                 break;
             }

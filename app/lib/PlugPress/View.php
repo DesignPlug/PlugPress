@@ -105,7 +105,7 @@ class View extends CustomTemplate{
     function templateInclude($template = null)
     {
         Views::setData($this->view_path($this->file, '.php'), $this->getData());
-        return $this->getTemplate($this->file);
+        return $this->getTemplate(Plugpress::DS($this->file));
     }
     
     function view_path($path = "", $ext = ""){

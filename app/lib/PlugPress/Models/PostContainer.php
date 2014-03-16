@@ -17,8 +17,8 @@ class PostContainer extends Collection{
          $meta = array();
          foreach($this->items as $post){
              $meta[$post->ID] = $post->get_postmeta();
-             if(isset($meta[$post->ID]['_thumbnail_id'])){
-                 $thumbnail_ids[] = $meta[$post->ID]['_thumbnail_id'];
+             if(isset($meta[$post->ID]->_thumbnail_id)){
+                 $thumbnail_ids[] = $meta[$post->ID]->_thumbnail_id;
              }
          }
          
@@ -31,7 +31,7 @@ class PostContainer extends Collection{
              
              foreach($this->items as $post){
                  foreach($thumbnails as $thumb){
-                     if($thumb->post_id == $meta[$post->ID]["_thumbnail_id"]){
+                     if($thumb->post_id == $meta[$post->ID]->_thumbnail_id){
                          $post->set_thumbnail(unserialize($thumb->meta_value), $upload_paths['url']);
                      }
                  }
