@@ -53,6 +53,7 @@ class View extends CustomTemplate{
             throw new \InvalidArgumentException("View::scripts expects a callable callback as the first argument");
         }
         $this->scripts_callback = $callable_scripts;
+        return $this;
     }
     
     function wp_render($type = "include"){

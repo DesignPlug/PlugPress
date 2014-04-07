@@ -125,7 +125,7 @@
              }else{
                     if(!in_array($k, $ignore)){
                             $string .= $k;
-                            $string .=  isset($v) ? "=" .$v ." " : " ";
+                            $string .=  isset($v) ? "='" .htmlspecialchars($v) ."' " : " ";
                     }
              }
          }

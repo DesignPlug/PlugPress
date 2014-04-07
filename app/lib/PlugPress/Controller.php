@@ -2,7 +2,7 @@
 
 abstract class Controller {
     
-    protected $View, $ajaxOnly, $plugin;
+    protected $View, $ajaxOnly, $plugin, $loginRequired;
     
     function __get($var){
         return @$this->$var;
@@ -12,6 +12,12 @@ abstract class Controller {
         if(!Plugpress::DB()->is_404){
             HTTP::setHeaderStatus(404);
             return $this->View->view("404.php")->wp_render();
+        }
+    }
+    
+    function requireLogin(){
+        if(!is_user_logged_in()){
+            $this->get404();
         }
     }
     

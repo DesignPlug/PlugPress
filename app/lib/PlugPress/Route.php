@@ -70,8 +70,25 @@ class Route {
             $target = explode('#', trim($target));
             $target[0] = new $target[0];
             if($target[0] instanceof \Plugpress\Controller){
-                if($target[0]->ajaxOnly === true && !HTTP::isAjaxRequest()){
-                    $target[1] = 'get404';
+                
+                //if no login is required or if the user is logged in
+                //allow user access to controller
+                
+                if(!$target[0]->loginRequired || is_user_logged_in()){
+                    
+                    //if controller is only accessible via ajax,
+                    //and the request is not ajax set action to 'get404'
+                    
+                    if($target[0]->ajaxOnly === true && !HTTP::isAjaxRequest()){
+                        $target[1] = 'get404';
+                    }
+                } 
+                
+                //else login is required and user is not logged in
+                //set method to get404
+                
+                else {
+                    $target[1] = 'requireLogin';
                 }
             }
         }

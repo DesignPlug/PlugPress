@@ -53,9 +53,11 @@ final class PluginInitializer {
         define($ns ."VIEWS_DIR",   constant($ns .'DIR') .'\Views');
         define($ns ."CTRL_DIR",   constant($ns .'DIR') .'\Controllers');
         define($ns ."MODELS_DIR",   constant($ns .'DIR') .'\Models');
+        define($ns ."VENDORS_DIR",   constant($ns .'DIR') .'\vendors');
         define($ns ."PUBLIC_DIR",  constant($ns .'BASE_DIR') .'\public');
         define($ns ."CSS_PATH", '/' .$this->plugin_file_name .'/public/css');
         define($ns ."JS_PATH",  '/' .$this->plugin_file_name .'/public/js');
+        define($ns ."URL", plugins_url() ."/" .$this->plugin_file_name);
 
         //set wp table prefix
         global $wpdb;
@@ -73,6 +75,8 @@ final class PluginInitializer {
 
         $call($set_const, "_NAMESPACE", $ns);
         $call($set_const, "BASE_DIR", constant($ns ."BASE_DIR"));
+        $call($set_const, "VENDORS_DIR", constant($ns ."VENDORS_DIR"));
+        $call($set_const, "URL", constant($ns ."URL"));
         $call($set_const, "PLUGIN_FILE", constant($ns ."PLUGIN_FILE"));
         $call($set_const, "DB_PREFIX", constant($ns ."DB_PREFIX"));
         $call($set_const, "APP_DIR",  constant($ns ."APP_DIR"));

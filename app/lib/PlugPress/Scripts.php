@@ -33,7 +33,7 @@
         {
             wp_register_script($handle, plugins_url($this->js_dir .'/' .rtrim($file, '.js') .'.js'), $deps);
             wp_enqueue_script($handle);
-            return this;
+            return $this;
         }
 
         function jquery($handle, $file)

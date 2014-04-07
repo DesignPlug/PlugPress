@@ -53,6 +53,7 @@ class Post extends \WPMVC\Framework\Model
     
     public function set_thumbnail(array $thumbnail_meta, $upload_url){
         $this->thumbnail_data = $thumbnail_meta;
+        $upload_url .= "/" .dirname($thumbnail_meta['file']); 
         foreach($thumbnail_meta['sizes'] as $size => $data){
             $this->thumbnail_data['sizes'][$size]['src'] = $upload_url ."/" .$data['file'];
         }
