@@ -33,7 +33,24 @@ class Shortcode {
         $callback = parse_callable($this->callback);
         
         $param = func_get_args();
-        if($this->recur == true) $param[1] = do_shortcode($param[1]);
+        if($this->recur == true){
+            
+            //don't allow anything to be outputted directly from here
+            //otherwise content that was intended to be inside current 
+            //shortcode may be echoed to the view BEFORE and outside it's container
+            
+            ob_start();
+                $param[1] = do_shortcode($param[1]);
+            $content = ob_get_clean();
+            
+            //if content was echoed instead of returned, we'll
+            //set that content as the second param else we'll 
+            //just use the returned content
+            
+            if(trim($content) !== ""){
+                $param[1] = $content;
+            }
+        }
         
         if(count($this->atts) > 0){
             $param[0] = shortcode_atts($this->atts, $param[0], $this->tag);

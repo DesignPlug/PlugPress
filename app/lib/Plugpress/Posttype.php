@@ -203,7 +203,7 @@ abstract class Posttype implements Initable{
     function update() 
     {       
         //update only if  posttype matches
-        if(strtolower($this->name) == $_POST['post_type']) 
+        if(strtolower($this->name) == @$_POST['post_type']) 
         {
             //set custom fields with posted value
             HTTP::setPostVars($this->Fields());
