@@ -56,6 +56,7 @@ class Shortcode {
             $param[0] = shortcode_atts($this->atts, $param[0], $this->tag);
         }
         
+        
         return call_user_func_array($callback, $param);
     }
     
